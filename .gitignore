@@ -1,0 +1,56 @@
+############################
+# Unity auto-generated
+############################
+Library/
+Temp/
+Obj/
+Build/
+Builds/
+Logs/
+UserSettings/
+
+############################
+# OS / Editor
+############################
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+############################
+# Visual Studio / Rider
+############################
+*.csproj
+*.sln
+*.user
+*.pidb
+*.suo
+*.vs/
+*.unityproj
+
+############################
+# Unity build outputs
+############################
+*.apk
+*.aab
+*.exe
+*.app
+*.dll
+*.unitypackage
+
+############################
+# Crash / cache
+############################
+sysinfo.txt
+crashlytics-build.properties
+
+############################
+# Addressables
+############################
+ServerData/
+
+############################
+# Logs / temp data
+############################
+*.log
