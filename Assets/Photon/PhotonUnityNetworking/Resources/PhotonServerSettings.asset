@@ -39,6 +39,12 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - RPC_SetGameSTate
+  - RPC_SetGameState
+  - RequestOpen
+  - RequestReport
+  - RpcOpen
+  - RPCReport
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
