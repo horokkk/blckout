@@ -7,6 +7,9 @@ using TMPro;
 
 public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
 {   
+    //싱글톤으로 생성
+    public static GameStateManager instance;
+
     #region 인스펙터창 설정 변수
     [Header("UI 연결")]
     public TextMeshProUGUI timerText; //투표 타이머
@@ -23,18 +26,30 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     #region 내부 변수
 
     //상태변수
-    private GameState currentState = GameState.Playing_OnLight;
+    public GameState currentState = GameState.Playing_OnLight;
     private float currentGameTime;
 
     //투표용 변수
     private double votingEndTime;
     #endregion
     
+    //싱글톤으로 생성하기 위한 초기작업
+    void Awake()
+    {
+        if (instance == null) instance = this;
+        else Destroy(gameObject);
+    }
     void Start()
     {
+        #region 테스트용 코드
+        PhotonNetwork.Instantiate("Player", Vector3.zero, Quaternion.identity);
+        #endregion
+
         currentGameTime = gameTime;
         if(votingPanel != null) votingPanel.SetActive(false);
         UpdateLightState();
+
+        
     }
 
     void Update()

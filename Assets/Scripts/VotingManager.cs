@@ -41,6 +41,7 @@ public class VotingManager : MonoBehaviourPunCallbacks
         currentVoteCount = 0;
 
         if (skipButton != null) skipButton.interactable = true;
+       
     }
 
     public override void OnDisable()

@@ -21,10 +21,31 @@ public class PlayerController : MonoBehaviourPun
             playerNameText.text = photonView.Owner.NickName;
             playerNameText.color = Color.black;
         }
+
+        // #region 맵 테스트용 임시 코드
+        // if (photonView.IsMine)
+        // {
+        //     CameraFollow cam = Camera.main.GetComponent<CameraFollow>();
+        //     if (cam != null)
+        //     {
+        //         cam.target = this.transform;
+        //     }
+        // }
+        // #endregion
     }
 
     void Update()
-    {
+    {   
+        // 1.내 캐릭터 아니면 조종X
+        if (!photonView.IsMine) return;
+
+        // 2.게임 상태 체크
+        if (GameStateManager.instance.currentState == GameState.Voting)
+        {
+            GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+            return;
+        }
+
         if  (photonView.IsMine)
         {
             ProcessInput();
