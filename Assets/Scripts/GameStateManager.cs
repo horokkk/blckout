@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering.Universal;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
@@ -11,7 +12,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     public TextMeshProUGUI timerText; //투표 타이머
     public TextMeshProUGUI totalGameTimeText; //전체 게임 타이머
     public GameObject votingPanel;
-    public Light globalLight;
+    public Light2D globalLight;
 
     [Header("설정")]
     public float gameTime = 1800.0f;
@@ -31,30 +32,10 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     
     void Start()
     {
-        #region 테스트용 코드 후에 지울 것
-
-        if (PhotonNetwork.IsConnected)
-        {
-            PhotonNetwork.JoinOrCreateRoom("TestRoom", new RoomOptions { MaxPlayers = 4}, TypedLobby.Default);
-        }
-        else
-        {
-            PhotonNetwork.ConnectUsingSettings();
-        }
-        #endregion
-
         currentGameTime = gameTime;
         if(votingPanel != null) votingPanel.SetActive(false);
         UpdateLightState();
     }
-
-    #region 테스트용 코드 후에 지울 것
-    public override void OnConnectedToMaster()
-    {
-        Debug.Log("서버 접속 성공. 방 참가를 시도합니다");
-        PhotonNetwork.JoinOrCreateRoom("TestRoom",new RoomOptions {MaxPlayers = 4}, TypedLobby.Default);
-    }
-    #endregion
 
     void Update()
     {   
