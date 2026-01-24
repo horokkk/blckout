@@ -46,6 +46,8 @@ MonoBehaviour:
   - RpcOpen
   - RPCReport
   - RPC_CastVote
+  - RPC_RequestMeeting
+  - RPC_ShowVoteResult
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -4,6 +4,7 @@ using UnityEngine.Rendering.Universal;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
+using ExitGames.Client.Photon; //Hashtable 사용 위해서
 
 public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
 {   
@@ -16,6 +17,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     public TextMeshProUGUI totalGameTimeText; //전체 게임 타이머
     public GameObject votingPanel;
     public Light2D globalLight;
+    public TextMeshProUGUI resultText; //결과출력창 (임시)
 
     [Header("설정")]
     public float gameTime = 1800.0f;
@@ -41,11 +43,20 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     void Start()
     {
+        
         #region 테스트용 코드
         if (PhotonNetwork.IsConnectedAndReady)
         {
+            resultText.text = "";
+
+            // 1. 인게임씬에 캐릭터 생성하기 위한 코드
             Vector2 randomPos = Random.insideUnitCircle * 2.0f;
             PhotonNetwork.Instantiate("Player(Test)", randomPos, Quaternion.identity);
+
+            // 2. 상태 초기화
+            Hashtable props = new Hashtable();
+            props.Add("IsDead", false);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
         #endregion
 
