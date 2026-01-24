@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             playerNameText.color = Color.black;
         }
 
-        // #region 맵 테스트용 임시 코드
+        #region 맵 테스트용 임시 코드
         if (photonView.IsMine)
         {
             CameraFollow cam = Camera.main.GetComponent<CameraFollow>();
@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
                 cam.target = this.transform;
             }
         }
-        // #endregion
+        #endregion
     }
 
     void Update()

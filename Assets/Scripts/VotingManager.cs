@@ -112,7 +112,7 @@ public class VotingManager : MonoBehaviourPunCallbacks
         if (totalVoteStatusText != null)
         {
             int totalPlayers = GetLivingPlayerCount();
-            totalVoteStatusText.text = $"투표현황: {currentVoteCount}/{totalPlayers}";
+            totalVoteStatusText.text = $"{currentVoteCount}/{totalPlayers}";
         }
     }
 
@@ -228,6 +228,7 @@ public class VotingManager : MonoBehaviourPunCallbacks
 
         
     }
+    #endregion
 
     [PunRPC]
     void RPC_ShowVoteResult (string msg)
@@ -250,5 +251,4 @@ public class VotingManager : MonoBehaviourPunCallbacks
             GameStateManager.instance.EndVoting();
         }
     }
-    #endregion
 }
