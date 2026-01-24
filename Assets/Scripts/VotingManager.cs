@@ -64,21 +64,17 @@ public class VotingManager : MonoBehaviourPunCallbacks
     void GeneratePlayerList()
     {   
         //기존 슬롯 지우기
-        foreach (Transform child in listContent)
-        {
-            Destroy(child.gameObject);
-        }
+        foreach (Transform child in listContent)Destroy(child.gameObject);
         slotList.Clear();
 
         foreach (Player player in PhotonNetwork.PlayerList)
         {   
+            bool isDead = false;
+            if (player.CustomProperties.ContainsKey("IsDead")) isDead = (bool)player.CustomProperties["IsDead"];
+
             //프리팹 생성
             GameObject gameObject = Instantiate(voteSlotPrefab, listContent);
             VoteSlot slot = gameObject.GetComponent<VoteSlot>();
-
-            //죽은 플레이어인지 확인 (후에 CustomProperties 사용 예정. 현재는 false로 둠)
-            bool isDead = false;
-            // if (player.CustomProperties.ContainsKey("IsDead")) isDead = (bool)player.CustomProperties["IsDead"];
 
             //슬롯 데이터 세팅 (이름, 번호, 사망여부)
             slot.Setup(player.NickName, player.ActorNumber, isDead);
@@ -87,8 +83,15 @@ public class VotingManager : MonoBehaviourPunCallbacks
             //슬롯 클릭이벤트 연결
             //버튼 클릭 시 그 슬롯의 'targetActorNumber'를 가지고 Vote함수 실행
             Button btn = gameObject.GetComponent<Button>();
-            int targetID = player.ActorNumber;
-            btn.onClick.AddListener(() => OnClickVote(targetID));
+            if (isDead) {
+                btn.interactable = false;
+                btn.image.color = Color.darkGray;
+            }
+            else
+            {
+                int targetID = player.ActorNumber;
+                btn.onClick.AddListener(() => OnClickVote(targetID));
+            }
         }
     }
 
@@ -108,7 +111,7 @@ public class VotingManager : MonoBehaviourPunCallbacks
     {
         if (totalVoteStatusText != null)
         {
-            int totalPlayers = PhotonNetwork.CurrentRoom.PlayerCount; //이거 추후에 죽은 사람은 빼고 계산하도록 변경해야할듯
+            int totalPlayers = GetLivingPlayerCount();
             totalVoteStatusText.text = $"투표현황: {currentVoteCount}/{totalPlayers}";
         }
     }
@@ -152,15 +155,7 @@ public class VotingManager : MonoBehaviourPunCallbacks
 
             Debug.Log("$방장 집계중: {targetID}번 플레이어가 1표 받음. (현재 총 {currentVoteCount}표)");
 
-            int totalLivingPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
-
-            //추후에 CustomProperties 플레이어에 세팅 후 주석 풀기 (죽은 사람 빼고 세는 부분) + 위에 totalPlayers = 0 처리!
-            // foreach (Player p in PhotonNetwork.PlayerList)
-            // {
-            //     object isDeadValue;
-            //     if (p.CustomProperties.TryGetValue("IsDead", out isDeadValue) && (bool)isDeadValue) continue;
-            //     totalLivingPlayers++;
-            // }
+            int totalLivingPlayers = GetLivingPlayerCount();
 
             if (currentVoteCount >= totalLivingPlayers)
             {
@@ -169,6 +164,20 @@ public class VotingManager : MonoBehaviourPunCallbacks
             }
         }
         #endregion
+    }
+
+    int GetLivingPlayerCount()
+    {
+        int cnt = 0;
+        foreach(Player p in PhotonNetwork.PlayerList)
+        {
+            if (!p.CustomProperties.ContainsKey("IsDead") || !(bool)p.CustomProperties["IsDead"])
+            {
+                cnt++;
+            }
+        } 
+
+        return cnt;
     }
 
     #region 방장만 가지는 메소드 로직

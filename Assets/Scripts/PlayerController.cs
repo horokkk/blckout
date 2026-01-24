@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 using TMPro;
+using Photon.Realtime;
+using ExitGames.Client.Photon;
 
-public class PlayerController : MonoBehaviourPun
+public class PlayerController : MonoBehaviourPunCallbacks
 {
     [Header("플레이어 설정")]
     public float moveSpeed = 5f;
@@ -14,8 +16,12 @@ public class PlayerController : MonoBehaviourPun
 
     private Vector3 currentPos;
 
+    public SpriteRenderer spriteRenderer; //캐릭터 색 변경에 사용 (임시)
+
     void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         if (photonView.Owner != null)
         {
             playerNameText.text = photonView.Owner.NickName;
@@ -23,14 +29,14 @@ public class PlayerController : MonoBehaviourPun
         }
 
         // #region 맵 테스트용 임시 코드
-        // if (photonView.IsMine)
-        // {
-        //     CameraFollow cam = Camera.main.GetComponent<CameraFollow>();
-        //     if (cam != null)
-        //     {
-        //         cam.target = this.transform;
-        //     }
-        // }
+        if (photonView.IsMine)
+        {
+            CameraFollow cam = Camera.main.GetComponent<CameraFollow>();
+            if (cam != null)
+            {
+                cam.target = this.transform;
+            }
+        }
         // #endregion
     }
 
@@ -49,6 +55,20 @@ public class PlayerController : MonoBehaviourPun
         if  (photonView.IsMine)
         {
             ProcessInput();
+        }
+    }
+
+    public override void OnEnable()
+    {
+        base.OnEnable();
+        CheckLifeStatus(); //재접속 대비
+    }
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        if (targetPlayer.ActorNumber == photonView.Owner.ActorNumber && changedProps.ContainsKey("IsDead"))
+        {
+            CheckLifeStatus();
         }
     }
 
@@ -76,5 +96,27 @@ public class PlayerController : MonoBehaviourPun
         {
             anim.SetBool("IsWalking", false);
         }
+    }
+
+    void CheckLifeStatus()
+    {
+        bool isDead = false;
+
+        if (photonView.Owner.CustomProperties.ContainsKey("IsDead")) isDead = (bool)photonView.Owner.CustomProperties["IsDead"];
+        if (isDead) Die();
+    }
+
+    void Die()
+    {
+        Debug.Log($"{photonView.Owner.NickName} 사망!");
+
+        if (spriteRenderer != null)
+        {
+            playerNameText.color = Color.red;
+            Color color = spriteRenderer.color;
+            color.a = 0.5f; //반투명
+            spriteRenderer.color = color;
+        }
+
     }
 }
