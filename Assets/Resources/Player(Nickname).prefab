@@ -257,7 +257,7 @@ GameObject:
   - component: {fileID: 7481538514369894759}
   - component: {fileID: 63777657872127596}
   - component: {fileID: 6567382224021773748}
-  - component: {fileID: 3171876206291991259}
+  - component: {fileID: 6526352683532356387}
   m_Layer: 0
   m_Name: Player(Nickname)
   m_TagString: Untagged
@@ -463,7 +463,7 @@ MonoBehaviour:
   interactDistance: 1.2
   interactableMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   interactKey: 101
 --- !u!50 &63777657872127596
 Rigidbody2D:
@@ -529,7 +529,7 @@ CapsuleCollider2D:
   m_Offset: {x: 0.00038948498, y: 0.015222184}
   m_Size: {x: 0.05629082, y: 0.0062510823}
   m_Direction: 1
---- !u!114 &3171876206291991259
+--- !u!114 &6526352683532356387
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -538,10 +538,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8180571238026562750}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0d5d64a031074f99aa9aecf1d91c001, type: 3}
+  m_Script: {fileID: 11500000, guid: de7c871cee3c7492f844fbfd4561547b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventoryDev
-  slotIcon: {fileID: 0}
-  slotButton: {fileID: 0}
-  iconRoot: {fileID: 0}
-  currentItem: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryModel
+  item: {fileID: 0}
