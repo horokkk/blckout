@@ -21,7 +21,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
 
     [Header("설정")]
     public float gameTime = 1800.0f;
-    public float blackoutDelay = 30.0f;
+    public float blackoutDelay = Random.Range(30f, 60f); // 30초->30~60초 랜덤으로 변경
     public float votingTime = 120.0f;
     #endregion
 
@@ -33,6 +33,10 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
 
     //투표용 변수
     private double votingEndTime;
+
+    // 열거형 상수
+    public enum WhoWin {None = 0, SurvivorWin = 10, KillerWin = 20}
+
     #endregion
     
     //싱글톤으로 생성하기 위한 초기작업
@@ -114,7 +118,6 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
             else photonView.RPC("RPC_RequestMeeting", RpcTarget.MasterClient);
         }
         #endregion
-        
     }
 
 
@@ -201,5 +204,15 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
                 UpdateLightState();
             }
         }
+    }
+
+    public void AssignJobs()
+    {
+        
+    }
+
+    public WhoWin CheckWinCondition()
+    {
+        return WhoWin.None;
     }
 }
