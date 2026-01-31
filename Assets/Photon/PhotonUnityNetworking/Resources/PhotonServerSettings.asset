@@ -54,6 +54,8 @@ MonoBehaviour:
   - RPC_ReceiveSystem
   - RpcOpen
   - RPCReport
+  - RPC_ReportLoadingComplete
+  - RPC_StartGame
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
