@@ -7,7 +7,7 @@ using TMPro;
 using ExitGames.Client.Photon; //Hashtable 사용 위해서
 
 public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
-{   
+{
     //싱글톤으로 생성
     public static GameStateManager instance;
 
@@ -20,8 +20,8 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     public TextMeshProUGUI resultText; //결과출력창 (임시)
 
     [Header("설정")]
-    public float gameTime = 1800.0f;
-    public float blackoutDelay = Random.Range(30f, 60f); // 30초->30~60초 랜덤으로 변경
+    public const float gameTime = 1800.0f; // 수정 못하게 상수로 변경
+    public float blackoutDelay;
     public float votingTime = 120.0f;
     #endregion
 
@@ -34,11 +34,11 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     //투표용 변수
     private double votingEndTime;
 
-    // 열거형 상수
-    public enum WhoWin {None = 0, SurvivorWin = 10, KillerWin = 20}
+    // 승리 조건 체크용 변수
+    public enum WhoWin { None = 0, SurvivorWin = 10, KillerWin = 20 }
 
     #endregion
-    
+
     //싱글톤으로 생성하기 위한 초기작업
     void Awake()
     {
@@ -47,7 +47,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     void Start()
     {
-        
+
         #region 테스트용 코드
         if (PhotonNetwork.IsConnectedAndReady)
         {
@@ -64,62 +64,89 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         #endregion
 
+        blackoutDelay = Random.Range(30f, 60f); // 30초->30~60초 랜덤으로 변경
         currentGameTime = gameTime;
-        if(votingPanel != null) votingPanel.SetActive(false);
+        if (votingPanel != null) votingPanel.SetActive(false);
         UpdateLightState();
 
-        
+
     }
 
     void Update()
-    {   
-        #region [방장 ONLY]
+    {
+        switch (currentState)
+        {
+            case GameState.Playing_OnLight:
+            case GameState.Playing_OffLight:
+                UpdatePlayLogic();
+                break;
+            case GameState.Voting:
+                UpdateVoteLogic();
+                break;
+            case GameState.Result:
+                break;
+        }
+
+        UpdateGlobalTimer();
+    }
+
+
+    #region [게임 로직 관련]
+
+    public void UpdatePlayLogic()
+    {
         if (PhotonNetwork.IsMasterClient)
         {
-            if (currentState == GameState.Playing_OnLight || currentState == GameState.Playing_OffLight)
+            currentGameTime -= Time.deltaTime;
+
+            float timeElapsed = gameTime - currentGameTime;
+            if (currentState == GameState.Playing_OnLight && timeElapsed >= blackoutDelay)
             {
-                currentGameTime -= Time.deltaTime;
-
-                float timeElapsed = gameTime - currentGameTime;
-                if (currentState == GameState.Playing_OnLight && timeElapsed >= blackoutDelay)
-                {
-                    photonView.RPC("RPC_SetGameState", RpcTarget.All, GameState.Playing_OffLight,0.0);
-                }
-
-                if (currentGameTime <= 0) currentGameTime = 0;
+                photonView.RPC("RPC_SetGameState", RpcTarget.All, GameState.Playing_OffLight, 0.0);
             }
 
-            if (currentState == GameState.Voting && PhotonNetwork.Time >= votingEndTime)
-            {
-                EndVoting();
-            }
-        }
-        #endregion
+            if (currentGameTime <= 0) currentGameTime = 0;
 
-        #region [전체 플레이어]
-
-        //1. 전체 게임 시간 표시
-        int min = (int) (currentGameTime / 60);
-        int sec = (int) (currentGameTime % 60);
-        if (totalGameTimeText != null) totalGameTimeText.text = string.Format("{0:00}:{1:00}", min, sec);
-
-        //2. 투표 남은 시간 표시
-        if (currentState == GameState.Voting)
-        {
-            double timeRemaining = votingEndTime - PhotonNetwork.Time;
-            if (timeRemaining > 0) timerText.text = ((int) timeRemaining).ToString();
-            else timerText.text = "0";
+            CheckWinCondition();
         }
 
-        //3. 투표 시작 요청(우선은 M키 누르면 시작되게)
+        // 3. 투표 시작 요청(우선은 M키 누르면 시작되게)
         if (Input.GetKeyDown(KeyCode.M))
         {
             if (PhotonNetwork.IsMasterClient) StartMeeting();
             else photonView.RPC("RPC_RequestMeeting", RpcTarget.MasterClient);
         }
-        #endregion
     }
 
+    public void AssignJobs()
+    {
+
+    }
+
+    public WhoWin CheckWinCondition()
+    {
+        return WhoWin.None;
+    }
+
+    #endregion
+
+
+    #region [투표 관련 로직]
+    public void UpdateVoteLogic()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if (PhotonNetwork.Time >= votingEndTime)
+            {
+                EndVoting();
+            }
+        }
+
+        // 2. 투표 남은 시간 표시
+        double timeRemaining = votingEndTime - PhotonNetwork.Time;
+        if (timeRemaining > 0) timerText.text = ((int)timeRemaining).ToString();
+        else timerText.text = "0";
+    }
 
     [PunRPC]
     public void RPC_RequestMeeting()
@@ -127,34 +154,38 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
         StartMeeting();
     }
 
-    //회의 시작&종료 로직
+    // 투표 회의 시작&종료 로직
     public void StartMeeting()
     {
         if (currentState == GameState.Voting) return;
-        
+
         double endTime = PhotonNetwork.Time + votingTime;
         photonView.RPC("RPC_SetGameState", RpcTarget.All, GameState.Voting, endTime);
     }
 
-    [PunRPC]
-    void RPC_SetGameState(GameState newState, double endTime)
+    public void EndVoting()
     {
-        currentState = newState;
-        votingEndTime = endTime;
+        if (!PhotonNetwork.IsMasterClient) return;
 
-        switch (newState)
-        {
-            case GameState.Playing_OnLight:
-            case GameState.Playing_OffLight:
-                if (votingPanel != null) votingPanel.SetActive(false);
-                timerText.text = "";
-                UpdateLightState();
-                break;
-            case GameState.Voting:
-                if (votingPanel != null) votingPanel.SetActive(true);
-                globalLight.intensity = 1.0f;
-                break;    
-        }
+        float timeElapsed = gameTime - currentGameTime;
+
+        GameState nextState;
+        if (timeElapsed >= blackoutDelay) nextState = GameState.Playing_OffLight;
+        else nextState = GameState.Playing_OnLight;
+
+        photonView.RPC("RPC_SetGameState", RpcTarget.All, nextState, 0.0);
+    }
+
+    #endregion
+
+
+    #region [UI 관련]
+    public void UpdateGlobalTimer()
+    {
+        // 1. 전체 게임 시간 표시
+        int min = (int)(currentGameTime / 60);
+        int sec = (int)(currentGameTime % 60);
+        if (totalGameTimeText != null) totalGameTimeText.text = string.Format("{0:00}:{1:00}", min, sec);
     }
 
     void UpdateLightState()
@@ -172,21 +203,32 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
             globalLight.color = Color.darkGray;
         }
     }
+    #endregion
 
-    public void EndVoting()
+
+    #region [네트워크 관련]
+    [PunRPC]
+    void RPC_SetGameState(GameState newState, double endTime)
     {
-        if (!PhotonNetwork.IsMasterClient) return;
-        
-        float timeElapsed = gameTime - currentGameTime;
+        currentState = newState;
+        votingEndTime = endTime;
 
-        GameState nextState;
-        if (timeElapsed >= blackoutDelay) nextState = GameState.Playing_OffLight;
-        else nextState = GameState.Playing_OnLight;
-
-        photonView.RPC("RPC_SetGameState", RpcTarget.All,nextState,0.0);
+        switch (newState)
+        {
+            case GameState.Playing_OnLight:
+            case GameState.Playing_OffLight:
+                if (votingPanel != null) votingPanel.SetActive(false);
+                timerText.text = "";
+                UpdateLightState();
+                break;
+            case GameState.Voting:
+                if (votingPanel != null) votingPanel.SetActive(true);
+                globalLight.intensity = 1.0f;
+                break;
+        }
     }
 
-    public void OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info)
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
@@ -205,14 +247,6 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
     }
+    #endregion
 
-    public void AssignJobs()
-    {
-        
-    }
-
-    public WhoWin CheckWinCondition()
-    {
-        return WhoWin.None;
-    }
 }
