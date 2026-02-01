@@ -137,7 +137,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             string job = (string)jobValue;
 
-            if (job == "Killer")
+            if (job == "Killer" && photonView.IsMine)
             {
                 playerNameText.color = Color.red; // 킬러면 빨간색
             }
