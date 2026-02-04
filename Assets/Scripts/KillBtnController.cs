@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Collections;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Unity.VisualScripting;
+using HashTable = ExitGames.Client.Photon.Hashtable;
 
 public class KillBtnController : MonoBehaviourPunCallbacks
 {
@@ -144,8 +145,14 @@ public class KillBtnController : MonoBehaviourPunCallbacks
         {
             Debug.Log($"킬 성공! 사망자: {targetScript.photonView.Owner.NickName}");
             
-            // 타켓 플레이어 사망 처리: 가져온 스크립트의 RPC 함수 호출
-            
+            // 5) 타켓 플레이어 사망 처리
+            // IsDead = true로 변경
+            PhotonView pv = closestPlayer.GetComponent<PhotonView>();
+            HashTable playerSetting = pv.Owner.CustomProperties;
+            playerSetting["IsDead"] = true;
+
+            // 가져온 스크립트의 Die() 함수 호출
+            targetScript.Die();
 
             return true; // 스킬 사용 성공
         }

@@ -533,6 +533,8 @@ MonoBehaviour:
   anim: {fileID: 4377210779074387404}
   playerNameText: {fileID: 4534010434648015675}
   spriteRenderer: {fileID: 8733851416894423090}
+  deadSprite: {fileID: 21300000, guid: d69c9d63de0334466a4a9430978ee700, type: 3}
+  deadSortingOrder: 0
 --- !u!114 &7481538514369894759
 MonoBehaviour:
   m_ObjectHideFlags: 0
