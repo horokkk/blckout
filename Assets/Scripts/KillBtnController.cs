@@ -10,6 +10,8 @@ public class KillBtnController : MonoBehaviourPunCallbacks
     
     void Start()
     {
+        Debug.Log("KillBtnController.cs 시작");
+        
         // 일단 시작하자마자 킬 버튼 비활성화
         killButton.gameObject.SetActive(false);
         killButton.onClick.AddListener(OnClickKillButton);
@@ -26,6 +28,7 @@ public class KillBtnController : MonoBehaviourPunCallbacks
             
             if(job == "Killer") // 직업이 킬러인 사람만 킬 버튼 활성화
             {   
+                Debug.Log("킬러의 킬 버튼 활성화!");
                 killButton.gameObject.SetActive(true);
                 killButton.interactable = true;
             }
