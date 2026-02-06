@@ -70,6 +70,8 @@ MonoBehaviour:
   - RPC_DestroySelf
   - RPC_RequestTakeItem
   - RPC_SuccessTakeItem
+  - RPC_TriggerFirework
+  - RPC_Firework
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
