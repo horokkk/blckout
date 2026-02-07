@@ -7,7 +7,7 @@ public class InventoryModel : MonoBehaviourPun
 {
     public static InventoryModel instance;
 
-    //플레이어 인벤토리 모델이 생서된 것을 알리는 정적 이벤트
+    //플레이어 인벤토리 모델이 생성된 것을 알리는 정적 이벤트
     //매개변수로 자기자신(InventoryModel)을 넘겨줌
     public static event Action<InventoryModel> OnPlayerSpawned;
 
@@ -18,7 +18,7 @@ public class InventoryModel : MonoBehaviourPun
     {
         if (photonView.IsMine)  {
             instance = this;
-            //플레이어 생서되면 => InventoryModel을 InventoryUIController 쪽으로 전달.
+            //플레이어 생성되면 => InventoryModel을 InventoryUIController 쪽으로 전달.
             OnPlayerSpawned?.Invoke(this);
         }
     }
@@ -35,8 +35,14 @@ public class InventoryModel : MonoBehaviourPun
         OnInventoryChanged?.Invoke();
     }
 
-    void RefreshUI ()
+    public ItemData DropItem() 
     {
-        
+        ItemData dropItem = this.item;
+
+        this.item = null;
+        OnInventoryChanged?.Invoke();
+
+        return dropItem;
     }
+
 }
