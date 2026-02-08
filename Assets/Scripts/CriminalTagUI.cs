@@ -18,7 +18,7 @@ public class CriminalTagUI : MonoBehaviour
             criminalText.gameObject.SetActive(false);
     }
 
-    private void Show(float customDuration = -1f)
+    public void Show(float customDuration = -1f)
     {
         if(criminalText == null) return;
 

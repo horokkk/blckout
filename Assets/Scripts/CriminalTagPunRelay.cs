@@ -1,14 +1,14 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class CriminalTagPunRelay : MonoBehaviour
+public class CriminalTagPunRelay : MonoBehaviourPun
 {
     [SerializeField] private CriminalTagUI criminalTagUI;
 
     private void Awake()
     {
         if(criminalTagUI == null)
-            criminalTagUI = GetComponent<criminalTagUI>();
+            criminalTagUI = GetComponent<CriminalTagUI>();
     }
 
     [PunRPC]
