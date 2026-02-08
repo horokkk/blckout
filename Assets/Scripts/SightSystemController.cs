@@ -107,6 +107,9 @@ public class SightSystemController : MonoBehaviour
 
             visionLight = found;
 
+            //로컬에서만 visionlight 켜기
+            visionLight.enabled = true;
+
             ApplyCurrentVisualState();//바인딩 직후 현재 상태 반영
 
             Debug.Log("[SightSystemController] Bound VisionLight (visionlight) from local player.");
@@ -189,6 +192,7 @@ public class SightSystemController : MonoBehaviour
         if(globalLight != null) globalLight.intensity = globalIntensity_Blackout;
         if(visionLight != null)
         {
+            visionLight.enabled = true;
             visionLight.intensity = visionIntensity_OffLight;
             SetLightRadius(visionLight, visionRadius_OffLight);
         }
