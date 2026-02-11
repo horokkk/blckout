@@ -153,6 +153,12 @@ public class PlayerInteraction : MonoBehaviourPun
         //홀드 대상일 경우
         if(holdTarget != null)
         {
+            //이미 패널 열려있으면 홀드 금지
+            if(activeInteractable == currentTarget)
+            {
+                CancelHold();
+                return;
+            }
             HandleHold(holdTarget);
             return;
         }
