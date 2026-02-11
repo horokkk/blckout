@@ -130,7 +130,7 @@ public class KillBtnController : MonoBehaviourPunCallbacks
             if (!pv.IsMine && !isDead) // 내 캐릭터가 아니고 상대 플레이어가 살아있다면
             {
                 float curDistance = Vector2.Distance(myPlayer.transform.position, p.transform.position);
-                if(curDistance < closestDistance)
+                if (curDistance < closestDistance)
                 {
                     closestDistance = curDistance; // 최솟값 갱신
                     closestPlayer = p; // 가장 가까운 플레이어도 갱신
@@ -144,30 +144,30 @@ public class KillBtnController : MonoBehaviourPunCallbacks
         Debug.Log($"가장 가까운 플레이어: {pv.Owner.NickName}");
 
         // 가장 가까운 플레이어의 PlayerController.cs 스크립트를 가져오기
-        if(pv!=null) targetScript = closestPlayer.GetComponent<PlayerController>();
+        if (pv != null) targetScript = closestPlayer.GetComponent<PlayerController>();
 
         // 4) 킬 스킬 사용했을 때 사정거리(1.5유닛) 안 가장 가까운 플레이어 죽이기
-        if(closestDistance < killRange)
+        if (closestDistance < killRange)
         {
             Debug.Log($"킬 성공! 사망자: {targetScript.photonView.Owner.NickName}");
-            
+
             // 5) 타켓 플레이어 사망 처리
             // IsDead = true로 변경
-            pv = closestPlayer.GetComponent<PhotonView>();
-            HashTable playerSetting = pv.Owner.CustomProperties;
-            playerSetting["IsDead"] = true;
+            Hashtable props = new Hashtable();
+            props.Add("IsDead", true);
+            photonView.Owner.SetCustomProperties(props);
 
             // 가져온 스크립트의 Die() 함수 호출
             targetScript.Die();
-            
+
             #region [범인태그]
             //밝은 상태에서 Attack했다면
-            if(GameStateManager.instance != null && GameStateManager.instance.currentState == GameState.Playing_OnLight)
+            if (GameStateManager.instance != null && GameStateManager.instance.currentState == GameState.Playing_OnLight)
             {
                 //살인마 오브젝트 PhotonView 컴포넌트 가져옴
                 PhotonView killerPV = myPlayer.GetComponent<PhotonView>();
 
-                if(killerPV != null)
+                if (killerPV != null)
                     //모든 클라에게 RPC 호출 -> 10초 동안 범인 표시
                     killerPV.RPC("RPC_ShowCriminalTag", RpcTarget.All, 10f);
 

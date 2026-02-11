@@ -1,5 +1,5 @@
 using Photon.Pun;
-using Photon.Realtime;
+using UnityEngine;
 
 public static class GameUtils
 {
@@ -8,10 +8,16 @@ public static class GameUtils
     {
         get
         {
-            if(PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsDead", out object isDead))
+            // 1. 포톤 연결 안 됐으면 살아있는 걸로 침
+            if (PhotonNetwork.LocalPlayer == null) return false;
+
+            // 2. 프로퍼티 검사
+            if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsDead", out object isDead))
             {
                 return (bool)isDead;
             }
+
+            // 3. 정보 없으면 살아있는 걸로 침
             return false;
         }
     }
