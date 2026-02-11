@@ -35,6 +35,9 @@ public class KillBtnController : MonoBehaviourPunCallbacks
 
     void Update()
     {
+        // Killer만 스페이스바 스킬 발동되도록
+        if(!GameUtils.IsMyPlayerKiller) return;
+
         // 스페이스바 누르면 스킬 발동 함수 호출
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -57,21 +60,15 @@ public class KillBtnController : MonoBehaviourPunCallbacks
 
     public void CheckJobAndActivateUI()
     {
-        if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Job"))
+        if (GameUtils.IsMyPlayerKiller)
         {
-            string job = (string)PhotonNetwork.LocalPlayer.CustomProperties["Job"];
+            Debug.Log("킬러의 킬 버튼 활성화!");
+            killButton.gameObject.SetActive(true);
+            killButton.interactable = true;
 
-            if (job == "Killer") // 직업이 킬러인 사람만 킬 버튼 활성화
-            {
-                Debug.Log("킬러의 킬 버튼 활성화!");
-                killButton.gameObject.SetActive(true);
-                killButton.interactable = true;
-
-                // 만약 게임 시작하자마자 스킬 사용 가능 시 hide image는 false
-                // 게임 시작 후 쿨타임 똑같이 지나야 스킬 버튼 활성화된다면 true로 변경하기
-                hideImage.gameObject.SetActive(false);
-
-            }
+            // 만약 게임 시작하자마자 스킬 사용 가능 시 hide image는 false
+            // 게임 시작 후 쿨타임 똑같이 지나야 스킬 버튼 활성화된다면 true로 변경하기
+            hideImage.gameObject.SetActive(false);
         }
     }
 
@@ -155,7 +152,7 @@ public class KillBtnController : MonoBehaviourPunCallbacks
             // IsDead = true로 변경
             Hashtable props = new Hashtable();
             props.Add("IsDead", true);
-            photonView.Owner.SetCustomProperties(props);
+            targetScript.photonView.Owner.SetCustomProperties(props);
 
             // 가져온 스크립트의 Die() 함수 호출
             targetScript.Die();
