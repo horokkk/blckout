@@ -54,21 +54,16 @@ public class ReloadBtnController : MonoBehaviourPunCallbacks
     public void OnClickReloadButton()
     {
         reloadButton.interactable = false;
-
-        // 커스텀 프로퍼티 정보들 모두 초기화
-        Hashtable props = new Hashtable();
-        props.Add("IsDead", false);
-        props.Add("Job", "Survivor"); // 직업 기본값은 생존자로 설정함.
-        props.Add("Ready", false);
-        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
-
-        PhotonNetwork.LeaveRoom(); // 포톤의 방 나가기 함수 실행
+        photonView.RPC("RPC_MoveToLobby", RpcTarget.MasterClient);
     }
 
-    // LeaveRoom()이 실행되면 자동으로 실행됨.
-    public override void OnLeftRoom()
+    [PunRPC]
+    public void RPC_MoveToLobby()
     {
-        // 혼자만 로비씬으로 돌아가기
-        SceneManager.LoadScene("Scene_Lobby");
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // 다 같이 로비씬으로 이동
+            PhotonNetwork.LoadLevel("Scene_Lobby");
+        }
     }
 }
