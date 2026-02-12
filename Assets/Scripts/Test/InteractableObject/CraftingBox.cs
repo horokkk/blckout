@@ -70,11 +70,37 @@ public class CraftingBox : MonoBehaviourPun, IInteractable, IContainer, IHoldInt
         RefreshAllSlots();
         //(추가) 홀드ui 끔
         ShowHoldUI(false);
+
+        // 자동 투입: 들고 있는 아이템이 재료와 일치하면 바로 넣기
+        TryAutoDeposit();
+    }
+
+    private void TryAutoDeposit()
+    {
+        if (InventoryModel.instance == null) return;
+        ItemData heldItem = InventoryModel.instance.item;
+        if (heldItem == null) return;
+
+        for (int i = 0; i < requiredIngredients.Length; i++)
+        {
+            if (requiredIngredients[i].itemID == heldItem.itemID && slotStates[i] == false)
+            {
+                photonView.RPC("RPC_UpdateSlot", RpcTarget.All, i, true);
+                InventoryModel.instance.RemoveItem();
+                return;
+            }
+        }
     }
 
     public void ShowPanel (bool show)
     {
         craftPanel.SetActive(show);
+        //패널 닫힐 때 락 해제
+        if (!show)
+        {
+            var netLock = GetComponent<PhotonLock>();
+            netLock?.ReleaseLock();
+        }
     }
 
     //(추가) 홀드 게이지용
@@ -129,7 +155,7 @@ public class CraftingBox : MonoBehaviourPun, IInteractable, IContainer, IHoldInt
             ShowHoldUI(false);
 
             if(craftPanel != null && craftPanel.activeSelf)
-                craftPanel.SetActive(false);
+                ShowPanel(false);//craftPanel.SetActive(false);
         }
     }
 
