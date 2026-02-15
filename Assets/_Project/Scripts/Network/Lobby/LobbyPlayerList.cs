@@ -3,6 +3,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class LobbyPlayerList : MonoBehaviourPunCallbacks
 {
@@ -52,7 +53,7 @@ public class LobbyPlayerList : MonoBehaviourPunCallbacks
     }
 
     void Refresh()
-    {       
+    {
         Debug.Log($"[PlayerList] Refresh InRoom={PhotonNetwork.InRoom} " +
               $"Room={(PhotonNetwork.InRoom ? PhotonNetwork.CurrentRoom.Name : "null")} " +
               $"Count={(PhotonNetwork.InRoom ? PhotonNetwork.CurrentRoom.PlayerCount : -1)}");
@@ -61,7 +62,7 @@ public class LobbyPlayerList : MonoBehaviourPunCallbacks
         {
             return;
         }
-        
+
         if (!PhotonNetwork.InRoom)
         {
             playerCountText.text = "Players: -/- (Not in room)";
@@ -86,7 +87,22 @@ public class LobbyPlayerList : MonoBehaviourPunCallbacks
             var go = Instantiate(playerNameItemPrefab, contentRoot);
             var tmp = go.GetComponent<TMP_Text>();
             if (tmp == null) tmp = go.GetComponentInChildren<TMP_Text>();
-            tmp.text = p.NickName;
+
+            // 해당 플레이어의 IsReady 값도 가져오기
+            bool isReady = false;
+            if (p.CustomProperties.ContainsKey("IsReady"))
+            {
+                isReady = (bool)p.CustomProperties["IsReady"];
+            }
+            
+            // Ready 되었다면 옆에 Ready 표시
+            if(isReady) 
+            {
+                // Ready 글씨는 눈에 잘 띄게 초록색으로 변경했어용(다른 색도 가능!)
+                tmp.text = $"{p.NickName} <color=green>(Ready)</color>";
+            }
+            else tmp.text = p.NickName;
+
             spawned.Add(go);
         }
     }
@@ -99,6 +115,15 @@ public class LobbyPlayerList : MonoBehaviourPunCallbacks
         if (!initialized && PhotonNetwork.InRoom)
         {
             initialized = true;
+            Refresh();
+        }
+    }
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        if (changedProps.ContainsKey("IsReady"))
+        {
+            // UI 업데이트: Ready 표시 갱신
             Refresh();
         }
     }
