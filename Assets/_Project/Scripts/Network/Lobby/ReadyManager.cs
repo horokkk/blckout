@@ -189,7 +189,7 @@ public class ReadyManager : MonoBehaviourPunCallbacks
         {
             // 게임 시작 시 더 이상 다른 사람이 방으로 못 들어오게 막기
             PhotonNetwork.CurrentRoom.IsOpen = false;
-            PhotonNetwork.LoadLevel("TestScene_Result");
+            PhotonNetwork.LoadLevel("TestScene_Main");
         }
     }
 }
