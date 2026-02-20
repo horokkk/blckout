@@ -246,10 +246,12 @@ public class VotingManager : MonoBehaviourPunCallbacks
         {
             resultText.text = msg;
             resultText.gameObject.SetActive(true);
+            resultAnimator.gameObject.SetActive(false);
         }
 
         if (!isTie) {
             Debug.Log("2.무승부 아님 - 코루틴 시작 시도");
+            resultAnimator.gameObject.SetActive(true);
             StartCoroutine(PlayAnimationWithDelay());
         }
         else Debug.Log("무승부임");
