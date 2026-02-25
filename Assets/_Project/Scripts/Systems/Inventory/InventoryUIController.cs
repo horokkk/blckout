@@ -150,6 +150,7 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
         if (interactTarget is IContainer container)
         {
             Debug.Log("OnClickInventory 실행됨");
+            SoundManager.instance.UISoundPlay("ButtonClick");
             container.AddItem(inventoryModel.item);
             inventoryModel.RemoveItem();
         }
@@ -164,6 +165,7 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
     ////추가
     public void OnClickUseItem()
     {
+        SoundManager.instance.SFXPlay("ButtonClick");
         if (inventoryModel == null) return;
         inventoryModel.UseItem();
     }

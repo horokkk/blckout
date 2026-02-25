@@ -197,6 +197,12 @@ public class CraftingBox : MonoBehaviourPun, IInteractable, IContainer, IHoldInt
     }
 
     [PunRPC]
+    private void RPC_CraftSuccess()
+    {
+        SoundManager.instance.SFXPlay("PuttingDownObject");
+    }
+
+    [PunRPC]
     private void RPC_TryCraftItem()
     {
         if (!PhotonNetwork.IsMasterClient) return;
@@ -214,7 +220,7 @@ public class CraftingBox : MonoBehaviourPun, IInteractable, IContainer, IHoldInt
         int resultID = 3;
         object[] initData = new object[]{resultID};
         PhotonNetwork.InstantiateRoomObject(craftResultPrefabName, dropPos, Quaternion.identity, 0, initData);
-        SoundManager.instance.SFXPlay("PuttingDownObject");
+        photonView.RPC(nameof(RPC_CraftSuccess), RpcTarget.All);
 
         for (int i=0; i<slotStates.Length; i++)
         {
