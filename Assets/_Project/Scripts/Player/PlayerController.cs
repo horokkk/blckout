@@ -245,7 +245,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             if (KillMotionController.instance != null)
             {
                 Debug.Log("피해자 킬 모션 재생");
-                //KillMotionController.instance.ShowKillMotion();
+                KillMotionController.instance.ShowKillMotion();
             }
             
             // 메인 카메라를 찾아서

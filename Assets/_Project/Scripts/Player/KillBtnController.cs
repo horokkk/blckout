@@ -154,7 +154,7 @@ public class KillBtnController : MonoBehaviourPunCallbacks
             if (KillMotionController.instance != null)
             {
                 Debug.Log("가해자 킬 모션 재생");
-                //KillMotionController.instance.ShowKillMotion();
+                KillMotionController.instance.ShowKillMotion();
             }
             
             // 5) 타켓 플레이어 사망 처리

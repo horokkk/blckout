@@ -51,6 +51,9 @@ public class ResultScreenUI : MonoBehaviourPunCallbacks
         // 킬 모션 애니메이션이 끝날 때까지 2.5초 정도 여유롭게 기다려줌
         yield return new WaitForSeconds(2.5f);
 
+        Cursor.visible = true; // 마우스 커서 보이게 하기
+        Cursor.lockState = CursorLockMode.None; // 커서 화면 중앙 고정 해제
+
         resultPanel.gameObject.SetActive(true); // 결과창 패널 활성화
 
         if (resultText != null)
