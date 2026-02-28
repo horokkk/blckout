@@ -212,6 +212,14 @@ public class PlayerController : MonoBehaviourPunCallbacks
         // 내 캐릭터의 레이어를 "Ghost"로 변경 -> 산 사람들는 유령 못 봄
         gameObject.layer = LayerMask.NameToLayer("Ghost");
 
+        // 모든 유령 투명도 70퍼로 설정
+        if (spriteRenderer != null) 
+        {
+            Color ghostColor = spriteRenderer.color;
+            ghostColor.a = 0.7f;
+            spriteRenderer.color = ghostColor;
+        }
+
         // 만약 본인이 죽은 거면 다른 Ghost 보이게 변경
         if (photonView.IsMine)
         {
@@ -221,14 +229,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
             {
                 // Culling Mask에 "Ghost" 레이어를 추가해서 보이게 만들기
                 mainCam.cullingMask |= (1 << LayerMask.NameToLayer("Ghost"));
-
-                // 유령이 되면 자기 캐릭터가 반투명하게 보이도록 알파값 조절
-                if (spriteRenderer != null)
-                {
-                    Color ghostColor = spriteRenderer.color;
-                    ghostColor.a = 0.7f; // 70% 투명도
-                    spriteRenderer.color = ghostColor;
-                }
             }
         }
 
