@@ -164,7 +164,7 @@ public class KillBtnController : MonoBehaviourPunCallbacks
             targetScript.photonView.Owner.SetCustomProperties(props);
 
             // 가져온 스크립트의 Die() 함수 호출
-            targetScript.Die();
+            targetScript.Die(true);
 
             #region [범인태그]
             //밝은 상태에서 Attack했다면

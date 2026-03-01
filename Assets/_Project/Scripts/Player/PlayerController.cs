@@ -173,7 +173,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
     }
 
-    public void Die()
+    public void Die(bool isAssassinated = false)
     {        
         if (photonView.IsMine)
         {
@@ -189,7 +189,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         Debug.Log($"{photonView.Owner.NickName} 사망!");
 
-        photonView.RPC("RPC_BecomeGhost", RpcTarget.All);
+        photonView.RPC("RPC_BecomeGhost", RpcTarget.All, isAssassinated);
         SoundManager.instance.SFXPlay("DeadPopNoise");
     }
 
@@ -204,7 +204,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void RPC_BecomeGhost()
+    public void RPC_BecomeGhost(bool isAssassinated)
     {
         // 애니메이터에게 사망 신호 보내기
         if (anim != null)
@@ -249,11 +249,14 @@ public class PlayerController : MonoBehaviourPunCallbacks
         // 만약 본인이 죽은 거면
         if (photonView.IsMine)
         {
-            // 피해자이므로 킬 모션 재생
-            if (KillMotionController.instance != null)
+            // 살인자에게 죽었을 때만
+            if (isAssassinated) 
             {
-                Debug.Log("피해자 킬 모션 재생");
-                KillMotionController.instance.ShowKillMotion();
+                // 피해자이므로 킬 모션 재생
+                if (KillMotionController.instance != null) 
+                {
+                    KillMotionController.instance.ShowKillMotion();
+                }
             }
             
             // 메인 카메라를 찾아서
