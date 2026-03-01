@@ -13,6 +13,9 @@ public class ResultScreenUI : MonoBehaviourPunCallbacks
     [SerializeField] private TextMeshProUGUI resultText; // 결과 텍스트
     [SerializeField] private Button reloadButton; // 재시작 버튼
 
+    // 내부 변수
+    private string nextRoomNameToJoin = "";
+
     void Start()
     {
         resultText.text = "";
@@ -42,24 +45,34 @@ public class ResultScreenUI : MonoBehaviourPunCallbacks
 
     private void ShowPanel(GameStateManager.WhoWin winner)
     {
-        // 결과창 패널 활성화
-        resultPanel.gameObject.SetActive(true);
+        StartCoroutine(ShowPanelDelayed(winner));
+    }
 
-        // 결과 텍스트 띄우기
+    // 킬 모션이 끝날 때까지 기다렸다가 띄워주는 코루틴
+    private System.Collections.IEnumerator ShowPanelDelayed(GameStateManager.WhoWin winner)
+    {
+        // 킬 모션 애니메이션이 끝날 때까지 2.5초 정도 여유롭게 기다려줌
+        yield return new WaitForSeconds(2.5f);
+
+        Cursor.visible = true; // 마우스 커서 보이게 하기
+        Cursor.lockState = CursorLockMode.None; // 커서 화면 중앙 고정 해제
+
+        resultPanel.gameObject.SetActive(true); // 결과창 패널 활성화
+
         if (resultText != null)
         {
             resultText.gameObject.SetActive(true);
-            if (winner == GameStateManager.WhoWin.SurvivorWin) 
+            if (winner == GameStateManager.WhoWin.SurvivorWin)
             {
                 resultText.text = "<color=green>SURVIVOR WIN!</color>";
             }
-            else 
+            else
             {
                 resultText.text = "<color=red>KILLER WIN!</color>";
             }
         }
 
-        reloadButton.interactable = true; // 돌아가기 버튼 상호작용 키기
+        reloadButton.interactable = true; // 돌아가기 버튼 상호작용 켜기
     }
 
     private void OnDestroy()
@@ -73,17 +86,40 @@ public class ResultScreenUI : MonoBehaviourPunCallbacks
 
     public void OnClickReloadButton()
     {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log("방장만 로비로 돌아가기를 누를 수 있습니다!");
+            return;
+        }
+
         reloadButton.interactable = false;
-        photonView.RPC("RPC_MoveToLobby", RpcTarget.MasterClient);
+
+        // 모두에게 방을 버리고 초기 화면으로 도망가라고 명령!
+        photonView.RPC("RPC_DestroyRoomAndLeave", RpcTarget.All);
     }
 
     [PunRPC]
-    public void RPC_MoveToLobby()
+    public void RPC_DestroyRoomAndLeave()
     {
-        if (PhotonNetwork.IsMasterClient)
+        // 1. 혹시 모를 망령(유령 스폰 버그 등)을 막기 위해 내 개인 데이터 싹 삭제!
+        Hashtable clearProps = new Hashtable();
+        foreach (var key in PhotonNetwork.LocalPlayer.CustomProperties.Keys)
         {
-            // 다 같이 로비씬으로 이동
-            PhotonNetwork.LoadLevel("Scene_Lobby");
+            clearProps[key] = null;
         }
+        PhotonNetwork.LocalPlayer.SetCustomProperties(clearProps);
+
+        // 2. 현재 꼬인 방을 가차 없이 버리고 나갑니다. (LeaveRoom)
+        PhotonNetwork.LeaveRoom();
+    }
+
+    // 3. 방을 완벽하게 빠져나왔을 때 자동으로 실행되는 콜백 함수
+    public override void OnLeftRoom()
+    {
+        base.OnLeftRoom();
+
+        // 4. 포톤 네트워크 로딩이 아니라, 유니티의 기본 씬 이동을 사용해서 완전히 새 출발!
+        // ⚠️ 주의: 괄호 안에 유저님의 진짜 첫 접속 씬 이름을 정확히 적어주세요!
+        SceneManager.LoadScene("Scene_Connect");
     }
 }
