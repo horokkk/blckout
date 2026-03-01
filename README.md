@@ -2,7 +2,7 @@
 웹에서 플레이 가능한 어몽어스 스타일의 2D 멀티플레이 마피아 게임.
 
 
-🎮 **[웹에서 바로 플레이하기](https://BlackOut-PJT.github.io/blckout/BlackOut)**
+🎮 **[웹에서 바로 플레이하기](https://BlackOut-PJT.github.io/blckout/BlackOut/)**
 
 ## Tech Stack
 - **Engine**: Unity 3.16.3
