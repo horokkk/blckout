@@ -11,18 +11,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Scene_Title.unity
     guid: e3366830906d8a346bf2ebdfcf865929
-  - enabled: 0
-    path: Assets/Prefabs/Scene_Connect.unity
-    guid: 8f2026a227003ab4faf1e653d40b19f7
-  - enabled: 1
-    path: Assets/_Project/Scenes/Scene_Lobby.unity
-    guid: fd2f7b958ef2fe54bbcb7e910ab64ae7
   - enabled: 1
     path: Assets/_Project/Scenes/Scene_Connect.unity
     guid: 2f5060c5df9793c4eb27e331dc3c3d2c
   - enabled: 1
+    path: Assets/_Project/Scenes/Scene_Lobby.unity
+    guid: fd2f7b958ef2fe54bbcb7e910ab64ae7
+  - enabled: 1
     path: Assets/_Project/Scenes/TestScene_Main.unity
     guid: c131b1e8d5235194d9e2f0d4f64a70cc
+  - enabled: 0
+    path: Assets/Prefabs/Scene_Connect.unity
+    guid: 8f2026a227003ab4faf1e653d40b19f7
   - enabled: 0
     path: Assets/_Project/Scenes/TestScenes/Test_Scene_SY.unity
     guid: 1f69d27e166b240608bc044e6d2a6b64
